@@ -1,0 +1,24 @@
+Task 1.
++For all items that require data entry, check the input. If the entered data cannot be interpreted, then display a message and proceed to selecting action options.
+
+
+Task 2.
++Implement action 5 (statistics on the number of students in different courses) by analogy with action 4 (statistics on the number of students from different cities).
+
+Example:
+Input: 5
+Conclusion: Moscow - 5 Krasnodar - 3
+
+Task 3.
+Change the implementation of search by last name:
+
+    -If an empty string is entered, then display the full list of students.
+    -If only one last name is entered, then perform an exact search for students by last name.
+    -If 2 last names are entered, separated by a comma (,), then display all students whose last names in alphabetical order are >= first last name and <= second last name.
+
+Example:
+Input: Abrikosov, Persikov
+
+Conclusion: All students whose last names are >= Abrikosov and <= Persikov
+
+    If the input cannot be interpreted as one of the options above, then display the appropriate message and proceed to select options.
