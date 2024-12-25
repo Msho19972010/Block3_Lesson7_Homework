@@ -3,7 +3,6 @@ package org.db.students;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 public class StudentSurnameStorage {
     private static TreeMap<String, Set<Long>> surnamesTreeMap = new TreeMap<>();

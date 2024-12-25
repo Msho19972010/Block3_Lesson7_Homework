@@ -1,10 +1,7 @@
 package org.db.students;
 
-import com.sun.jdi.Value;
-
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
@@ -40,13 +37,24 @@ public class Main {
                 String data = null;
                 if(action == Action.CREATE || action == Action.UPDATE) {
                     System.out.println("Sequence: 'Surname,Name,Course,Town,Age'");
-                    data = validation(scanner.nextLine());
+                    data = scanner.nextLine();
+                    if(!(data.split(",").length == 5)) {
+                        while (!(data.split(",").length == 5)) {
+                            System.out.println("Please enter right sequence: 'Surname,Name,Course,Town,Age'");
+                            data = scanner.nextLine();
+                        }
+                    }
+                    data = mainInfoValidation(data);
                 } else if (action == Action.SEARCH) {
                     System.out.println("If you want to see the list of student just press 'Enter'.");
                     System.out.println("If you want to find someone specific, write a surname please.");
                     data = scanner.nextLine();
-                } else {
-                    data = scanner.nextLine();
+                    if(!data.isEmpty()) {
+                        data = mainInfoValidation(data);
+                    }
+                } else if(action == Action.DELETE) {
+                    System.out.println("If you want to delete some student please enter a student id.");
+                    data = numbersValidation(scanner.nextLine());
                 }
                 return new Command(action, data);
             } else {
@@ -70,39 +78,41 @@ public class Main {
         System.out.println("------------------------");
     }
 
-    private static String validation(String data) {
-        Scanner scanner = new Scanner(System.in);
+    private static String mainInfoValidation(String data) {
         String[] inputData = data.split(",");
+        Scanner scanner = new Scanner(System.in);
         String mainInfoRegEx = "^[A-Z]+[a-z]+-*[A-z]*[a-z]*$";
-        String ageRegEx = "[0-9]+";
         Pattern mainInfoPattern = Pattern.compile(mainInfoRegEx);
-        Pattern agePattern = Pattern.compile(ageRegEx);
 
-        //Name,Surname,Course and Town validation
-        for (int i = 0; i < 4; i++) {
-            boolean mainInfoValid = true;
-            Matcher mainInfoMatcher = mainInfoPattern.matcher(inputData[i]);
-            while (mainInfoValid != mainInfoMatcher.matches()) {
-                System.out.println("Name, Surname, Town and Course have to contain just letters, the first letter must by in High register, please rewrite");
-                System.out.println("Example: Brown,Tom,Java,Prague");
-                System.out.println("You hava a mistake in: '" + inputData[i] + "' word");
-                inputData[i] = scanner.nextLine();
-                mainInfoValid = mainInfoMatcher.matches();
+        for (int i = 0; i < inputData.length; i++) {
+            if(i < 4) {
+                while (!mainInfoPattern.matcher(inputData[i]).matches()) {
+                    //Name,Surname,Course and Town validation
+                    System.out.println("Surname, Name, Town and Course have to contain just letters, the first letter must by in High register, please rewrite");
+                    System.out.println("Example: Brown,Tom,Java,Prague");
+                    System.out.println("You hava a mistake in: '" + inputData[i] + "' word");
+                    inputData[i] = scanner.nextLine();
+                }
+            } else {
+                inputData[i] = numbersValidation(inputData[i]);
             }
         }
 
-        //Age validation
-        boolean ageValid = true;
-        Matcher ageMatcher = agePattern.matcher(inputData[4]);
-        while(ageValid != ageMatcher.matches()) {
-            System.out.println("Age can contain just integer, please rewrite");
-            inputData[4] = scanner.nextLine();
-            ageValid = ageMatcher.matches();
-        }
-
-        //Separate extra symbols
         String finalRegEx = "[\\[\\] ]";
         data = Arrays.toString(inputData).replaceAll(finalRegEx, "");
+
+        return data;
+    }
+
+    private static String numbersValidation(String data) {
+        //Numbers validation
+        Scanner scanner = new Scanner(System.in);
+        String numbersRegEx = "[0-9]+";
+        Pattern numsPattern = Pattern.compile(numbersRegEx);
+        while(!numsPattern.matcher(data).matches()) {
+            System.out.println("Here must be integer, but you wrote: '" + data +  "' please rewrite");
+            data = scanner.nextLine();
+        }
 
         return data;
     }

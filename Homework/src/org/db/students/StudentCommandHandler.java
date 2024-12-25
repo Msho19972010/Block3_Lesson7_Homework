@@ -44,15 +44,16 @@ public class StudentCommandHandler {
 
     private void processSearchCommand(Command command) {
         int surnamesCount = command.getData().split(",").length;
-        if(command.getData().isEmpty()) {
+        if(surnamesCount == 0) {
             studentStorage.printAll();
         } else if (surnamesCount == 1) {
             String surname = command.getData();
             System.out.println(studentStorage.search(surname));
         } else if (surnamesCount == 2) {
             String[] surnames = command.getData().split(",");
-            System.out.println(studentStorage.searchTheRangeOfSurnames(surnames[0], surnames[1]));
+            studentStorage.searchTheRangeOfSurnames(surnames[0], surnames[1]);
         }
+
     }
 
     private void processStatsByCourseCommand(Command command) {

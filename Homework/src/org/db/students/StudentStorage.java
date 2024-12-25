@@ -48,32 +48,34 @@ public class StudentStorage {
         Student removed = studentStorageMap.remove(id);
         if(removed != null) {
             String surname = removed.getSurname();
+            System.out.println("Student" + surname + " is deleted");
             studentSurnameStorage.studentDeleted(id, surname);
         }
         return removed != null;
     }
 
     public Set<Student> search(String surname) {
+        isEmptyDB();
         Set<Student> studentsWithEqualSurnames = new HashSet<>();
         for(Student student : studentStorageMap.values()) {
             if(surname.equals(student.getSurname())) {
                 studentsWithEqualSurnames.add(student);
+            } else {
+                System.out.println("The student with the surname: " + surname + " doesn't exist in our database");
             }
         }
         return studentsWithEqualSurnames;
     }
 
-    public Set<Student> searchTheRangeOfSurnames(String surname1, String surname2) {
-        Set<Student> studentsRageBySurnames = new HashSet<>();
+    public void searchTheRangeOfSurnames(String surname1, String surname2) {
+        isEmptyDB();
         for(Student student : studentStorageMap.values()) {
-            for (String surname : studentSurnameStorage.getStudentsBySurnames(surname1, surname2)) {
-                if(student.getSurname().equals(surname)) {
-                    studentsRageBySurnames.add(student);
-                }
+            if(studentSurnameStorage.getStudentsBySurnames(surname1, surname2).contains(student.getSurname()) || student.getSurname().equals(surname2)) {
+                System.out.println(student);
             }
         }
-        return studentsRageBySurnames;
     }
+
 
     public Long getNextId() {
         currentId = currentId + 1;
@@ -81,6 +83,7 @@ public class StudentStorage {
     }
 
     public void printAll() {
+        isEmptyDB();
         for(Student student : studentStorageMap.values()) {
             System.out.println(" - " + student);
         }
@@ -93,19 +96,7 @@ public class StudentStorage {
     }
 
     public Map<String, Long> getCountByCourse() {
-        //The classic variant
-//        Map<String, Long> res = new HashMap<>();
-//        for(Student student : studentStorageMap.values()) {
-//            String key = student.getCourse();
-//            Long count = res.getOrDefault(key, 0L);
-//            count++;
-//            res.put(key, count);
-//        }
-//
-//        return res;
-
-
-        //The variant with streamAPI
+        isEmptyDB();
         Map<String, Long> data = studentStorageMap.values().stream()
                 .collect(Collectors.toMap(
                         student -> student.getCourse(),
@@ -117,15 +108,7 @@ public class StudentStorage {
     }
 
     public Map<String, Long> getCountByCities() {
-//        Map<String, Long> data = new HashMap<>();
-//
-//        for(Student student : studentStorageMap.values()) {
-//            String key = student.getTown();
-//            Long count = data.getOrDefault(key, 0L);
-//            count++;
-//            data.put(key, count);
-//        }
-
+        isEmptyDB();
         Map<String, Long> data = studentStorageMap.values().stream()
                 .collect(Collectors.toMap(
                         student -> student.getTown(),
@@ -134,5 +117,11 @@ public class StudentStorage {
                 ));
 
         return data;
+    }
+
+    public void isEmptyDB() {
+        if(studentStorageMap.isEmpty()) {
+            System.out.println("The database is empty.");
+        }
     }
 }
