@@ -1,5 +1,8 @@
 package org.db.students;
 
+import org.db.students.exeptions.StudentNotFoundException;
+import org.db.students.exeptions.TheDataBaseIsEmpty;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,32 +45,33 @@ public class StudentStorage {
     /**
      * Deleting a student's data
      * @param id a student's id
-     * @return true if a student was found and false if wasn't
      */
-    public boolean deleteStudent(Long id) {
+    public void deleteStudent(Long id) throws StudentNotFoundException {
         Student removed = studentStorageMap.remove(id);
         if(removed != null) {
             String surname = removed.getSurname();
-            System.out.println("Student" + surname + " is deleted");
+            System.out.println("Student " + surname + " is deleted");
             studentSurnameStorage.studentDeleted(id, surname);
+        } else if(removed == null) {
+            throw new StudentNotFoundException();
         }
-        return removed != null;
     }
 
     public Set<Student> search(String surname) {
-        isEmptyDB();
         Set<Student> studentsWithEqualSurnames = new HashSet<>();
         for(Student student : studentStorageMap.values()) {
             if(surname.equals(student.getSurname())) {
                 studentsWithEqualSurnames.add(student);
-            } else {
+            } else if(!studentStorageMap.isEmpty()) {
                 System.out.println("The student with the surname: " + surname + " doesn't exist in our database");
+            } else {
+                System.out.println(studentStorageMap);
             }
         }
         return studentsWithEqualSurnames;
     }
 
-    public void searchTheRangeOfSurnames(String surname1, String surname2) {
+    public void searchTheRangeOfSurnames(String surname1, String surname2) throws TheDataBaseIsEmpty {
         isEmptyDB();
         for(Student student : studentStorageMap.values()) {
             if(studentSurnameStorage.getStudentsBySurnames(surname1, surname2).contains(student.getSurname()) || student.getSurname().equals(surname2)) {
@@ -82,10 +86,10 @@ public class StudentStorage {
         return currentId;
     }
 
-    public void printAll() {
+    public void printAll() throws TheDataBaseIsEmpty {
         isEmptyDB();
-        for(Student student : studentStorageMap.values()) {
-            System.out.println(" - " + student);
+        for(Map.Entry<Long, Student> student : studentStorageMap.entrySet()) {
+            System.out.println(" - Student: Id='" + student.getKey() + "', " + student.getValue());
         }
     }
 
@@ -95,7 +99,7 @@ public class StudentStorage {
         });
     }
 
-    public Map<String, Long> getCountByCourse() {
+    public Map<String, Long> getCountByCourse() throws TheDataBaseIsEmpty {
         isEmptyDB();
         Map<String, Long> data = studentStorageMap.values().stream()
                 .collect(Collectors.toMap(
@@ -107,7 +111,7 @@ public class StudentStorage {
         return data;
     }
 
-    public Map<String, Long> getCountByCities() {
+    public Map<String, Long> getCountByCities() throws TheDataBaseIsEmpty {
         isEmptyDB();
         Map<String, Long> data = studentStorageMap.values().stream()
                 .collect(Collectors.toMap(
@@ -119,9 +123,9 @@ public class StudentStorage {
         return data;
     }
 
-    public void isEmptyDB() {
+    public void isEmptyDB() throws TheDataBaseIsEmpty {
         if(studentStorageMap.isEmpty()) {
-            System.out.println("The database is empty.");
+            throw new TheDataBaseIsEmpty();
         }
     }
 }

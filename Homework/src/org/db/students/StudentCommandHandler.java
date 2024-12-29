@@ -1,12 +1,15 @@
 package org.db.students;
 
+import org.db.students.exeptions.StudentNotFoundException;
+import org.db.students.exeptions.TheDataBaseIsEmpty;
+
 import java.util.Map;
 
 public class StudentCommandHandler {
 
     private StudentStorage studentStorage = new StudentStorage();
 
-    public void processCommand(Command command) {
+    public void processCommand(Command command) throws StudentNotFoundException, TheDataBaseIsEmpty {
         Action action = command.getAction();
         switch (action) {
             case CREATE -> {
@@ -33,6 +36,10 @@ public class StudentCommandHandler {
                 processSearchCommand(command);
                 break;
             }
+            case SHAW_ALL_SURNAMES -> {
+                processShawAllStudents(command);
+                break;
+            }
             default -> {
                 System.out.println("This action "+ action + " doesn't supported");
             }
@@ -42,11 +49,9 @@ public class StudentCommandHandler {
                 ", data: " + command.getData());
     }
 
-    private void processSearchCommand(Command command) {
+    private void processSearchCommand(Command command) throws TheDataBaseIsEmpty {
         int surnamesCount = command.getData().split(",").length;
-        if(surnamesCount == 0) {
-            studentStorage.printAll();
-        } else if (surnamesCount == 1) {
+        if (surnamesCount == 1) {
             String surname = command.getData();
             System.out.println(studentStorage.search(surname));
         } else if (surnamesCount == 2) {
@@ -56,17 +61,21 @@ public class StudentCommandHandler {
 
     }
 
-    private void processStatsByCourseCommand(Command command) {
+    private void processShawAllStudents(Command command) throws TheDataBaseIsEmpty {
+        studentStorage.printAll();
+    }
+
+    private void processStatsByCourseCommand(Command command) throws TheDataBaseIsEmpty {
         Map<String, Long> data = studentStorage.getCountByCourse();
         studentStorage.printMap(data);
     }
 
-    private void processStatsByCitiesCommand(Command command) {
+    private void processStatsByCitiesCommand(Command command) throws TheDataBaseIsEmpty {
         Map<String, Long> data = studentStorage.getCountByCities();
         studentStorage.printMap(data);
     }
 
-    private void processCreateCommand(Command command) {
+    private void processCreateCommand(Command command) throws TheDataBaseIsEmpty {
         String data = command.getData();
         String[] dataArray = data.split(",");
 
@@ -94,10 +103,9 @@ public class StudentCommandHandler {
         student.setAge(Integer.valueOf(dataArray[5]));
 
         studentStorage.updateStudent(id, student);
-        studentStorage.printAll();
     }
 
-    public void processDeleteCommand(Command command) {
+    public void processDeleteCommand(Command command) throws StudentNotFoundException, TheDataBaseIsEmpty {
         String data = command.getData();
         Long id = Long.valueOf(data);
 

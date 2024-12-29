@@ -1,5 +1,8 @@
 package org.db.students;
 
+import org.db.students.exeptions.StudentNotFoundException;
+import org.db.students.exeptions.TheDataBaseIsEmpty;
+
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -7,7 +10,7 @@ import java.util.regex.Pattern;
 public class Main {
     private static StudentCommandHandler STUDENT_COMMAND_HANDLER = new StudentCommandHandler();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws StudentNotFoundException, TheDataBaseIsEmpty {
         while(true) {
             //Output a list of variants
             printMessage();
@@ -35,7 +38,7 @@ public class Main {
 
             if(action.isRequiredAdditionalData()) {
                 String data = null;
-                if(action == Action.CREATE || action == Action.UPDATE) {
+                if(action == Action.CREATE) {
                     System.out.println("Sequence: 'Surname,Name,Course,Town,Age'");
                     data = scanner.nextLine();
                     if(!(data.split(",").length == 5)) {
@@ -44,13 +47,25 @@ public class Main {
                             data = scanner.nextLine();
                         }
                     }
+
                     data = mainInfoValidation(data);
+                } else if(action == Action.UPDATE) {
+                    System.out.println("Sequence: 'Id,Surname,Name,Course,Town,Age'");
+                    data = scanner.nextLine();
+                    if(!(data.split(",").length == 6)) {
+                        while (!(data.split(",").length == 6)) {
+                            System.out.println("Please enter right sequence: 'Id,Surname,Name,Course,Town,Age'");
+                            data = scanner.nextLine();
+                        }
+                    }
                 } else if (action == Action.SEARCH) {
                     System.out.println("If you want to see the list of student just press 'Enter'.");
                     System.out.println("If you want to find someone specific, write a surname please.");
                     data = scanner.nextLine();
                     if(!data.isEmpty()) {
                         data = mainInfoValidation(data);
+                    } else {
+                        action = Action.fromCode(7);
                     }
                 } else if(action == Action.DELETE) {
                     System.out.println("If you want to delete some student please enter a student id.");
@@ -79,13 +94,16 @@ public class Main {
     }
 
     private static String mainInfoValidation(String data) {
-        String[] inputData = data.split(",");
         Scanner scanner = new Scanner(System.in);
+        data = data.replace(" ", ""); //Delete all spaces
+        String[] inputData = data.split(","); //Split one string to several words
         String mainInfoRegEx = "^[A-Z]+[a-z]+-*[A-z]*[a-z]*$";
+        String numbersRegEx = "[0-9]+";
+        Pattern numsPattern = Pattern.compile(numbersRegEx);
         Pattern mainInfoPattern = Pattern.compile(mainInfoRegEx);
 
         for (int i = 0; i < inputData.length; i++) {
-            if(i < 4) {
+            if(!numsPattern.matcher(inputData[i]).matches()) {
                 while (!mainInfoPattern.matcher(inputData[i]).matches()) {
                     //Name,Surname,Course and Town validation
                     System.out.println("Surname, Name, Town and Course have to contain just letters, the first letter must by in High register, please rewrite");

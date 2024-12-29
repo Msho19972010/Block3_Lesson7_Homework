@@ -23,8 +23,8 @@ public class StudentSurnameStorage {
     }
 
     /**
-     * This method returns students' surnames,
-     * who are between the first and the second transmitted surnames
+     * This method returns unique students' identifires,
+     * whose surnames are less or equal of transmitted
      * @return set
      */
     public Set<String> getStudentsBySurnames(String surname1, String surname2) {
