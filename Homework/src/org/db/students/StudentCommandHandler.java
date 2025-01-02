@@ -49,7 +49,7 @@ public class StudentCommandHandler {
                 ", data: " + command.getData());
     }
 
-    private void processSearchCommand(Command command) throws TheDataBaseIsEmpty {
+    private void processSearchCommand(Command command) throws TheDataBaseIsEmpty, StudentNotFoundException {
         int surnamesCount = command.getData().split(",").length;
         if (surnamesCount == 1) {
             String surname = command.getData();

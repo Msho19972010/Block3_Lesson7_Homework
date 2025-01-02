@@ -29,6 +29,6 @@ public class StudentSurnameStorage {
      */
     public Set<String> getStudentsBySurnames(String surname1, String surname2) {
 
-        return new HashSet<>(surnamesTreeMap.subMap(surname1, surname2).keySet());
+        return new HashSet<>(surnamesTreeMap.subMap(surname1, true, surname2, true).keySet());
     }
 }

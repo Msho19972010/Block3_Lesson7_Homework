@@ -52,18 +52,18 @@ public class StudentStorage {
             String surname = removed.getSurname();
             System.out.println("Student " + surname + " is deleted");
             studentSurnameStorage.studentDeleted(id, surname);
-        } else if(removed == null) {
+        } else {
             throw new StudentNotFoundException();
         }
     }
 
-    public Set<Student> search(String surname) {
+    public Set<Student> search(String surname) throws StudentNotFoundException {
         Set<Student> studentsWithEqualSurnames = new HashSet<>();
         for(Student student : studentStorageMap.values()) {
             if(surname.equals(student.getSurname())) {
                 studentsWithEqualSurnames.add(student);
             } else if(!studentStorageMap.isEmpty()) {
-                System.out.println("The student with the surname: " + surname + " doesn't exist in our database");
+                throw new StudentNotFoundException();
             } else {
                 System.out.println(studentStorageMap);
             }
@@ -73,8 +73,9 @@ public class StudentStorage {
 
     public void searchTheRangeOfSurnames(String surname1, String surname2) throws TheDataBaseIsEmpty {
         isEmptyDB();
+        Set<String> theRangeOfSurnames = studentSurnameStorage.getStudentsBySurnames(surname1, surname2);
         for(Student student : studentStorageMap.values()) {
-            if(studentSurnameStorage.getStudentsBySurnames(surname1, surname2).contains(student.getSurname()) || student.getSurname().equals(surname2)) {
+            if(theRangeOfSurnames.contains(student.getSurname())) {
                 System.out.println(student);
             }
         }
